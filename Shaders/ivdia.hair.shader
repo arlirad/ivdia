@@ -4,7 +4,7 @@
  * See the LICENSE file in the top-level directory for details.
  */
 
-Shader "Ivdia/Seethrough"
+Shader "Ivdia/Hair"
 {
     Properties
     {
@@ -16,7 +16,11 @@ Shader "Ivdia/Seethrough"
         _ShadeMin("Shade Min", Range(0.00, 1.00)) = 0.45
         _OutlineColor("Outline Color", Color) = (1.00, 1.00, 1.00, 1.00)
         _OutlineThickness("Outline Thickness", float) = 0.01
-        _EmissionStrength("Emission Strength", float) = 1.00
+        _SeethroughAlpha("Seethrough Alpha", Range(0.00, 1.00)) = 0.25
+        _HighlightTex ("Highlight Texture", 2D) = "white" {}
+        _HighlightColor("Highlight Color", Color) = (1.00, 1.00, 1.00, 1.00)
+        _HighlightDotUpper("Highlight Dot Upper", Range(0.00, 2.00)) = 0.75
+        _HighlightDotLower("Highlight Dot Lower", Range(0.00, 1.00)) = 0.1
     }
     SubShader
     {
@@ -28,49 +32,46 @@ Shader "Ivdia/Seethrough"
             Name "Main"
             Cull Back
 
-            CGPROGRAM
-            #define _IVDIA_EMISSION
-            #define _IVDIA_SEETHROUGH_OCULAR_OPAQUE_PASS
-            #include "./Code/ivdia.glslinc"
-            ENDCG
-        }
-
-        Pass
-        {
-            Name "Through Hair"
-            Cull Back
-
             Stencil
             {
                 Ref 2137
-                Comp always
-                Pass replace
+                Comp notequal
+                Pass keep
             }
 
             CGPROGRAM
-            #define _IVDIA_EMISSION
-            #define _IVDIA_SEETHROUGH_OCULAR_OPAQUE_PASS
-            #include "./Code/ivdia.glslinc"
+            #define _IVDIA_HAIR_HIGHLIGHT
+            #include "../Code/ivdia.glslinc"
             ENDCG
         }
 
         Pass
         {
-            Name "Through Hair Transparent"
+            Name "Main Seethrough"
             Cull Back
             Blend SrcAlpha OneMinusSrcAlpha
 
             Stencil
             {
                 Ref 2137
-                Comp always
-                Pass replace
+                Comp equal
+                Pass keep
             }
 
             CGPROGRAM
-            #define _IVDIA_EMISSION
-            #define _IVDIA_SEETHROUGH_OCULAR_TRANSPARENT_PASS
-            #include "./Code/ivdia.glslinc"
+            #define _IVDIA_SEETHROUGH_HAIR_ALPHA_PASS
+            #define _IVDIA_HAIR_HIGHLIGHT
+            #include "../Code/ivdia.glslinc"
+            ENDCG
+        }
+        
+        Pass
+        {
+            Name "Outline"
+            Cull Front
+
+            CGPROGRAM
+            #include "../Code/ivdia.outline.glslinc"
             ENDCG
         }
         
@@ -82,7 +83,7 @@ Shader "Ivdia/Seethrough"
             ZWrite Off Blend One One
 
             CGPROGRAM
-            #include "./Code/ivdia.lighting.glslinc"
+            #include "../Code/ivdia.lighting.glslinc"
             ENDCG
         }
     }

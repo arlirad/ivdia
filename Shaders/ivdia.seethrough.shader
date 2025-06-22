@@ -4,7 +4,7 @@
  * See the LICENSE file in the top-level directory for details.
  */
 
-Shader "Ivdia/Base"
+Shader "Ivdia/Seethrough"
 {
     Properties
     {
@@ -30,17 +30,47 @@ Shader "Ivdia/Base"
 
             CGPROGRAM
             #define _IVDIA_EMISSION
-            #include "./Code/ivdia.glslinc"
+            #define _IVDIA_SEETHROUGH_OCULAR_OPAQUE_PASS
+            #include "../Code/ivdia.glslinc"
             ENDCG
         }
-        
+
         Pass
         {
-            Name "Outline"
-            Cull Front
+            Name "Through Hair"
+            Cull Back
+
+            Stencil
+            {
+                Ref 2137
+                Comp always
+                Pass replace
+            }
 
             CGPROGRAM
-            #include "./Code/ivdia.outline.glslinc"
+            #define _IVDIA_EMISSION
+            #define _IVDIA_SEETHROUGH_OCULAR_OPAQUE_PASS
+            #include "../Code/ivdia.glslinc"
+            ENDCG
+        }
+
+        Pass
+        {
+            Name "Through Hair Transparent"
+            Cull Back
+            Blend SrcAlpha OneMinusSrcAlpha
+
+            Stencil
+            {
+                Ref 2137
+                Comp always
+                Pass replace
+            }
+
+            CGPROGRAM
+            #define _IVDIA_EMISSION
+            #define _IVDIA_SEETHROUGH_OCULAR_TRANSPARENT_PASS
+            #include "../Code/ivdia.glslinc"
             ENDCG
         }
         
@@ -52,7 +82,7 @@ Shader "Ivdia/Base"
             ZWrite Off Blend One One
 
             CGPROGRAM
-            #include "./Code/ivdia.lighting.glslinc"
+            #include "../Code/ivdia.lighting.glslinc"
             ENDCG
         }
     }

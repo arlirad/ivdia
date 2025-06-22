@@ -34,7 +34,7 @@ Shader "Ivdia/Wings"
 
             CGPROGRAM
             #define _IVDIA_EMISSION
-            #include "./Code/ivdia.wings.glslinc"
+            #include "../Code/ivdia.wings.glslinc"
             ENDCG
         }
         
@@ -44,7 +44,7 @@ Shader "Ivdia/Wings"
             Cull Front
 
             CGPROGRAM
-            #include "./Code/ivdia.outline.glslinc"
+            #include "../Code/ivdia.outline.glslinc"
             ENDCG
         }
         
@@ -56,7 +56,7 @@ Shader "Ivdia/Wings"
             ZWrite Off Blend One One
 
             CGPROGRAM
-            #include "./Code/ivdia.lighting.glslinc"
+            #include "../Code/ivdia.lighting.glslinc"
             ENDCG
         }
     }

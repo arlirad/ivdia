@@ -4,7 +4,7 @@
  * See the LICENSE file in the top-level directory for details.
  */
 
-Shader "Ivdia/Hair"
+Shader "Ivdia/Base"
 {
     Properties
     {
@@ -16,11 +16,7 @@ Shader "Ivdia/Hair"
         _ShadeMin("Shade Min", Range(0.00, 1.00)) = 0.45
         _OutlineColor("Outline Color", Color) = (1.00, 1.00, 1.00, 1.00)
         _OutlineThickness("Outline Thickness", float) = 0.01
-        _SeethroughAlpha("Seethrough Alpha", Range(0.00, 1.00)) = 0.25
-        _HighlightTex ("Highlight Texture", 2D) = "white" {}
-        _HighlightColor("Highlight Color", Color) = (1.00, 1.00, 1.00, 1.00)
-        _HighlightDotUpper("Highlight Dot Upper", Range(0.00, 2.00)) = 0.75
-        _HighlightDotLower("Highlight Dot Lower", Range(0.00, 1.00)) = 0.1
+        _EmissionStrength("Emission Strength", float) = 1.00
     }
     SubShader
     {
@@ -32,36 +28,9 @@ Shader "Ivdia/Hair"
             Name "Main"
             Cull Back
 
-            Stencil
-            {
-                Ref 2137
-                Comp notequal
-                Pass keep
-            }
-
             CGPROGRAM
-            #define _IVDIA_HAIR_HIGHLIGHT
-            #include "./Code/ivdia.glslinc"
-            ENDCG
-        }
-
-        Pass
-        {
-            Name "Main Seethrough"
-            Cull Back
-            Blend SrcAlpha OneMinusSrcAlpha
-
-            Stencil
-            {
-                Ref 2137
-                Comp equal
-                Pass keep
-            }
-
-            CGPROGRAM
-            #define _IVDIA_SEETHROUGH_HAIR_ALPHA_PASS
-            #define _IVDIA_HAIR_HIGHLIGHT
-            #include "./Code/ivdia.glslinc"
+            #define _IVDIA_EMISSION
+            #include "../Code/ivdia.glslinc"
             ENDCG
         }
         
@@ -71,7 +40,7 @@ Shader "Ivdia/Hair"
             Cull Front
 
             CGPROGRAM
-            #include "./Code/ivdia.outline.glslinc"
+            #include "../Code/ivdia.outline.glslinc"
             ENDCG
         }
         
@@ -83,7 +52,7 @@ Shader "Ivdia/Hair"
             ZWrite Off Blend One One
 
             CGPROGRAM
-            #include "./Code/ivdia.lighting.glslinc"
+            #include "../Code/ivdia.lighting.glslinc"
             ENDCG
         }
     }
